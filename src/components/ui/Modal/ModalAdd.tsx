@@ -28,6 +28,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const [categorias, setCategoria] = useState<ICategoria[]>([]);
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const url = import.meta.env.VITE_API_URL;
+    const [selectedUnidad, setSelectedUnidad] = useState<IUnidadMedida | null>(null);
 
     const initialValues: IArticuloManufacturado = productToEdit
         ? productToEdit
@@ -298,12 +299,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
 
                                             if (selectedUnidad) {
-                                                setFieldValue('unidadMedida', selectedUnidad
-                                                );
+                                                setFieldValue('unidadMedida', selectedUnidad);
                                             } else {
                                                 console.error("No se encontró la unidad seleccionada");
                                             }
                                         }}
+                                        value={values.unidadMedida ? values.unidadMedida.id : ''} 
                                     >
                                         <option value="">Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map((unidad) => (

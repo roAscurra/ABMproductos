@@ -102,9 +102,7 @@ export const Productos = () => {
             return <span>No hay imágenes disponibles</span>;
           }
         }
-      },
-      
-      
+      },      
   ];
 
   return (

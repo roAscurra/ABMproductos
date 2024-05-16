@@ -12,6 +12,7 @@ interface IArticuloManufacturado extends DataModel<IArticuloManufacturado> {
     tiempoEstimadoMinutos: number;
     preparacion: string;
     articuloManufacturadoDetalles: IArticuloManufacturadoDetalle[];
+
 }
 
 export default IArticuloManufacturado;

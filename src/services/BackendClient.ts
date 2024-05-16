@@ -93,6 +93,11 @@ export default abstract class BackendClient<T> extends AbstractBackendClient<T> 
         "Content-Type": "application/json",
       },
     };
-    await this.request(path, options);
+    try {
+      await fetch(path, options);
+    } catch (error) {
+      console.error("Error al eliminar el elemento:", error);
+      throw new Error("Error al eliminar el elemento");
+    }
   }
 }

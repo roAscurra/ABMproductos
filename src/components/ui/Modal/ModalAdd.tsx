@@ -10,6 +10,8 @@ import UnidadMedidaService from '../../../services/UnidadMedidaService';
 import CategoriaService from '../../../services/CategoriaService';
 import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
+import IArticuloInsumo from '../../../types/IArticuloInsumo';
+import ICategoria from '../../../types/ICategoria';
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -22,8 +24,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const insumoService = new ArticuloInsumoService();
     const categoriaService = new CategoriaService();
     const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
-    const [insumos, setInsumos] = useState<{ id: number; denominacion: string }[]>([]);
-    const [categorias, setCategoria] = useState<{ id: number; denominacion: string }[]>([]);
+    const [insumos, setInsumos] = useState<IArticuloInsumo[]>([]);
+    const [categorias, setCategoria] = useState<ICategoria[]>([]);
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const url = import.meta.env.VITE_API_URL;
 
@@ -116,7 +118,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                         precioVenta: Yup.number().required('Campo requerido'),
                         descripcion: Yup.string().required('Campo requerido'),
                         tiempoEstimadoMinutos: Yup.number().required('Campo requerido'),
-                        // unidadMedida: Yup.object().required('Campo requerido'),
                     })}
                     initialValues={initialValues}
                     onSubmit={async (values: IArticuloManufacturado) => {
@@ -129,6 +130,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 );
                                 console.log('Se ha actualizado correctamente.');
                             } else {
+                                values.unidadMedida = unidadSeleccionada;
                                 await productoService.post(url + 'api/producto', values);
                                 console.log('Se ha agregado correctamente.');
                             }
@@ -174,6 +176,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         name="categoria"
                                         as="select"
                                         className="form-control"
+                                        onChange={(e) => {
+                                            const categoriaId = parseInt(e.target.value);
+                                            const categoriaSeleccionada = categorias.find(categoria => categoria.id === categoriaId);
+                                            if (categoriaSeleccionada) {
+                                                console.log(categoriaSeleccionada)
+                                            } else {
+                                                console.error("No se encontró la categoría seleccionada");
+                                            }
+                                        }}
                                     >
                                         <option value="">Seleccionar Categoria</option>
                                         {categorias.map((categoria) => (
@@ -288,6 +299,15 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         name="unidadMedida"
                                         as="select"
                                         className="form-control"
+                                        onChange={(e) => {
+                                            const unidadId = parseInt(e.target.value);
+                                            const unidadSeleccionada = unidadesMedida.find(unidad => unidad.id === unidadId);
+                                            if (unidadSeleccionada) {
+                                                console.log(unidadSeleccionada)
+                                            } else {
+                                                console.error("No se encontró la categoría seleccionada");
+                                            }
+                                        }}
                                     >
                                         <option value="">Seleccionar Unidad de Medida</option>
                                         {unidadesMedida.map(unidad => (

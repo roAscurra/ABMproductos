@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch } from "../../../hooks/redux";
-import { setArticuloInsumo } from "../../../redux/slices/ArticuloInsumo";
 import TableComponent from "../../ui/Table/Table";
 import IUnidadMedida from "../../../types/IUnidadMedida";
 import articuloManufacturadoService from "../../../services/ArticuloManufacturadoService";
@@ -9,6 +8,8 @@ import { Add } from "@mui/icons-material";
 import IArticuloManufacturado from "../../../types/IArticuloManufacturado";
 import { toggleModal } from "../../../redux/slices/Modal";
 import ModalProducto from "../../ui/Modal/ModalAdd";
+import { setArticuloManufacturado } from "../../../redux/slices/ArticuloManufacturado";
+import ModalDelete from "../../ui/Modal/ModalDelete";
 
 interface Row {
   [key: string]: any;
@@ -27,12 +28,14 @@ export const Productos = () => {
   const productoService = new articuloManufacturadoService();
   const [filteredData, setFilteredData] = useState<Row[]>([]);
   const [productToEdit, setProductToEdit] = useState<IArticuloManufacturado | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const fetchProductos = useCallback(async () => {
     try {
       const productos = await productoService.getAll(url + 'api/producto');
-      dispatch(setArticuloInsumo(productos));
-      setFilteredData(productos);
+      const productosFiltrados = productos.filter((producto: IArticuloManufacturado) => !producto.eliminado);
+      dispatch(setArticuloManufacturado(productosFiltrados));
+      setFilteredData(productosFiltrados);
     } catch (error) {
       console.error("Error al obtener los productos", error);
     }
@@ -58,10 +61,45 @@ export const Productos = () => {
       descripcion: rowData.descripcion,
       tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
       preparacion: rowData.preparacion,
-      articuloManufacturadoDetalles: rowData.articuloManufacturado
+      articuloManufacturadoDetalles: rowData.articuloManufacturado,
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
+
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setProductToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      precioVenta: rowData.precioVenta,
+      imagenes: rowData.imagenes,
+      unidadMedida: rowData.unidadMedida,
+      descripcion: rowData.descripcion,
+      tiempoEstimadoMinutos: rowData.tiempoEstimadoMinutos,
+      preparacion: rowData.preparacion,
+      articuloManufacturadoDetalles: rowData.articuloManufacturado,
+    });
+    setDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+  };
+
+const handleDelete = async () => {
+    try {
+        if (productToEdit && productToEdit.id) {
+            await productoService.delete(url + 'productos', productToEdit.id.toString());
+            console.log('Se ha eliminado correctamente.');
+            handleCloseDeleteModal(); // Cerrar el modal de eliminación
+            fetchProductos(); // Refrescar la lista de productos
+        } else {
+            console.error('No se puede eliminar el producto porque no se proporcionó un ID válido.');
+        }
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+    }
+};
+
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -146,9 +184,10 @@ export const Productos = () => {
      
         {/* Componente de tabla para mostrar los artículos manufacturados */}
         <TableComponent data={filteredData} columns={columns} handleOpenEditModal={handleOpenEditModal} 
-        // handleOpenDeleteModal={handleOpenDeleteModal} 
+        handleOpenDeleteModal={handleOpenDeleteModal} 
         />
         <ModalProducto getProducts={fetchProductos} productToEdit={productToEdit !== null ? productToEdit : undefined} />
+        <ModalDelete show={deleteModalOpen} onHide={handleCloseDeleteModal} product={productToEdit} onDelete={handleDelete} />
 
 
       </Container>

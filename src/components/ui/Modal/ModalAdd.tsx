@@ -45,7 +45,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             tiempoEstimadoMinutos: 0,
             preparacion: '',
             articuloManufacturadoDetalles: [],
-          };
+
+        };
 
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
@@ -56,12 +57,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
 
     const fetchArticuloInsumo = async () => {
         try {
-          const articulosInsumos = await insumoService.getAll(url + 'api/articuloInsumo');
-          setInsumos(articulosInsumos);
+            const articulosInsumos = await insumoService.getAll(url + 'api/articuloInsumo');
+            setInsumos(articulosInsumos);
         } catch (error) {
-          console.error("Error al obtener los insumos:", error);
+            console.error("Error al obtener los insumos:", error);
         }
-      };
+    };
 
     const fetchUnidadesMedida = async () => {
         try {
@@ -96,8 +97,8 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             }
         }
     };
-    
-    
+
+
     return (
         <Modal
             id={'modal'}
@@ -130,7 +131,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 );
                                 console.log('Se ha actualizado correctamente.');
                             } else {
-                                values.unidadMedida = unidadSeleccionada;
                                 await productoService.post(url + 'api/producto', values);
                                 console.log('Se ha agregado correctamente.');
                             }
@@ -141,9 +141,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             console.log(values)
                         }
                     }}
-                    
+
                 >
-                    {({ values }) => (
+                    {({ values, setFieldValue }) => (
                         <Form autoComplete="off">
                             <Row>
                                 <Col>
@@ -176,14 +176,9 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         name="categoria"
                                         as="select"
                                         className="form-control"
-                                        onChange={(e) => {
+                                        onChange={(e: { target: { value: string; }; }) => {
                                             const categoriaId = parseInt(e.target.value);
-                                            const categoriaSeleccionada = categorias.find(categoria => categoria.id === categoriaId);
-                                            if (categoriaSeleccionada) {
-                                                console.log(categoriaSeleccionada)
-                                            } else {
-                                                console.error("No se encontró la categoría seleccionada");
-                                            }
+                                            setFieldValue('categoria', categoriaId);
                                         }}
                                     >
                                         <option value="">Seleccionar Categoria</option>
@@ -230,24 +225,23 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             <div>
                                                 <label htmlFor="articuloInsumo">Articulo Insumo:</label>
                                                 <div className="d-flex">
-                                                <Field
-                                                    as="select"
-                                                    name="selectedInsumo"
-                                                    className="form-control"
-                                                    value={selectedInsumo || ''}
-                                                    onChange={e => setSelectedInsumo(Number(e.target.value))}
-                                                >
-                                                    <option value="">Seleccionar Articulo Insumo</option>
-                                                    {insumos
-                                                        .filter(insumo => !values.articuloManufacturadoDetalles.some(detalle => detalle.id === insumo.id))
-                                                        .map(insumo => (
-                                                            <option key={insumo.id} value={insumo.id}>
-                                                                {insumo.denominacion}
-                                                            </option>
-                                                        ))
-                                                    }
-                                                </Field>
-
+                                                    <Field
+                                                        as="select"
+                                                        name="selectedInsumo"
+                                                        className="form-control"
+                                                        value={selectedInsumo || ''}
+                                                        onChange={(e: { target: { value: any; }; }) => setSelectedInsumo(Number(e.target.value))}
+                                                    >
+                                                        <option value="">Seleccionar Articulo Insumo</option>
+                                                        {insumos
+                                                            .filter(insumo => !values.articuloManufacturadoDetalles.some(detalle => detalle.id === insumo.id))
+                                                            .map(insumo => (
+                                                                <option key={insumo.id} value={insumo.id}>
+                                                                    {insumo.denominacion}
+                                                                </option>
+                                                            ))
+                                                        }
+                                                    </Field>
                                                     <Button
                                                         variant="outline-primary"
                                                         onClick={() => handleAddInsumo(arrayHelpers)}
@@ -299,23 +293,26 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                         name="unidadMedida"
                                         as="select"
                                         className="form-control"
-                                        onChange={(e) => {
-                                            const unidadId = parseInt(e.target.value);
-                                            const unidadSeleccionada = unidadesMedida.find(unidad => unidad.id === unidadId);
-                                            if (unidadSeleccionada) {
-                                                console.log(unidadSeleccionada)
+                                        onChange={(event: { target: { value: string; }; }) => {
+                                            const selectedUnitId = parseInt(event.target.value);
+                                            const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
+
+                                            if (selectedUnidad) {
+                                                setFieldValue('unidadMedida', selectedUnidad
+                                                );
                                             } else {
-                                                console.error("No se encontró la categoría seleccionada");
+                                                console.error("No se encontró la unidad seleccionada");
                                             }
                                         }}
                                     >
                                         <option value="">Seleccionar Unidad de Medida</option>
-                                        {unidadesMedida.map(unidad => (
+                                        {unidadesMedida.map((unidad) => (
                                             <option key={unidad.id} value={unidad.id}>
                                                 {unidad.denominacion}
                                             </option>
                                         ))}
                                     </Field>
+
                                     <ErrorMessage
                                         name="unidadMedida"
                                         className="error-message"

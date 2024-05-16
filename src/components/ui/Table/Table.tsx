@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Box } from '@mui/material';
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface Row {
   [key: string]: any;
@@ -10,19 +10,19 @@ interface Row {
 interface Column {
   id: keyof Row;
   label: string;
+  renderCell?: (rowData: Row) => JSX.Element; // Permitir renderizado personalizado
 }
 
 interface Props {
   data: Row[];
   columns: Column[];
   handleOpenEditModal: (rowData: Row) => void;
-  handleOpenDeleteModal: (rowData: Row) => void; // Nueva prop para manejar la apertura de la modal de eliminación
+  handleOpenDeleteModal: (rowData: Row) => void;
 }
 
-// const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal }) => {
-  const TableComponent: React.FC<Props> = ({ data, columns }) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+const TableComponent: React.FC<Props> = ({ data, columns, handleOpenEditModal, handleOpenDeleteModal }) => {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -35,7 +35,7 @@ interface Props {
 
   return (
     <>
-      <Table>
+      <Table className='m-3'>
         <TableHead>
           <TableRow>
             {columns.map((column) => (
@@ -45,27 +45,26 @@ interface Props {
           </TableRow>
         </TableHead>
         <TableBody>
-        {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-          <TableRow key={index}>
+          {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+            <TableRow key={index}>
               {columns.map((column) => (
-                  <TableCell key={column.id}>
-                      {/* Accede a la propiedad denominacion del objeto si está presente */}
-                      {row[column.id]?.denominacion || row[column.id]}
-                  </TableCell>
+                <TableCell key={column.id}>
+                  {/* Verificar si se proporciona una función de renderizado personalizado */}
+                  {column.renderCell ? column.renderCell(row) : row[column.id]}
+                </TableCell>
               ))}
-              {/* <TableCell>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                      <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
-                          <EditIcon />
-                      </IconButton>
-                      <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
-                          <DeleteIcon />
-                      </IconButton>
-                  </Box>
-              </TableCell> */}
-          </TableRow>
-      ))}
-
+              <TableCell>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton aria-label="editar" onClick={() => handleOpenEditModal(row)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton aria-label="eliminar" onClick={() => handleOpenDeleteModal(row)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
       <TablePagination

@@ -1,5 +1,5 @@
 import { Formik, Field, ErrorMessage, Form } from "formik";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Col, Row } from "react-bootstrap";
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { toggleModal } from "../../../redux/slices/Modal";
@@ -108,66 +108,120 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
           {({ values, setFieldValue }) => (
             <>
               <Form autoComplete="off">
-                <div className="mb-4">
-                  <label htmlFor="denominacion">Denominación:</label>
-                  <Field
-                    name="denominacion"
-                    type="text"
-                    placeholder="Denominación"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="denominacion"
-                    className="error-message"
-                    component="div"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="precioVenta">Precio de Venta:</label>
-                  <Field
-                    name="precioVenta"
-                    type="number"
-                    placeholder="Precio de Venta"
-                    className="form-control mt-2"
-                  />
-                  <ErrorMessage
-                    name="precioVenta"
-                    className="error-message"
-                    component="div"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="unidadMedida">Unidad de Medida:</label>
-                  <Field
-                    name="unidadMedida"
-                    as="select"
-                    className="form-control"
-                    onChange={(event: { target: { value: string; }; }) => {
-                      const selectedUnitId = parseInt(event.target.value);
-                      const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
+                <Row>
+                  <Col>
+                    <label htmlFor="denominacion">Denominación:</label>
+                    <Field
+                      name="denominacion"
+                      type="text"
+                      placeholder="Denominación"
+                      className="form-control mt-2"
+                    />
+                    <ErrorMessage
+                      name="denominacion"
+                      className="error-message"
+                      component="div"
+                    />
 
-                      if (selectedUnidad) {
-                        setFieldValue('unidadMedida', selectedUnidad);
-                      } else {
-                        console.error("No se encontró la unidad seleccionada");
-                      }
-                    }}
-                    value={values.unidadMedida ? values.unidadMedida.id : ''}
-                  >
-                    <option value="">Seleccionar Unidad de Medida</option>
-                    {unidadesMedida.map((unidad) => (
-                      <option key={unidad.id} value={unidad.id}>
-                        {unidad.denominacion}
-                      </option>
-                    ))}
-                  </Field>
+                    <label htmlFor="precioVenta">Precio de Venta:</label>
+                    <Field
+                      name="precioVenta"
+                      type="number"
+                      placeholder="Precio de Venta"
+                      className="form-control mt-2"
+                    />
+                    <ErrorMessage
+                      name="precioVenta"
+                      className="error-message"
+                      component="div"
+                    />
 
-                  <ErrorMessage
-                    name="unidadMedida"
-                    className="error-message"
-                    component="div"
-                  />
-                </div>
+                    <label htmlFor="precioCompra">Precio de Compra:</label>
+                    <Field
+                      name="precioCompra"
+                      type="number"
+                      placeholder="Precio de Compra"
+                      className="form-control mt-2"
+                    />
+                    <ErrorMessage
+                      name="precioCompra"
+                      className="error-message"
+                      component="div"
+                    />
+                  </Col>
+                  <Col>
+                      <label htmlFor="stockActual">Stock Actual:</label>
+                      <Field
+                        name="stockActual"
+                        type="number"
+                        placeholder="Stock Actual"
+                        className="form-control mt-2"
+                      />
+                      <ErrorMessage
+                        name="stockActual"
+                        className="error-message"
+                        component="div"
+                      />
+                      <label htmlFor="stockMaximo">Stock Máximo:</label>
+                      <Field
+                        name="stockMaximo"
+                        type="number"
+                        placeholder="Stock Máximo"
+                        className="form-control mt-2"
+                      />
+                      <ErrorMessage
+                        name="stockMaximo"
+                        className="error-message"
+                        component="div"
+                      />
+
+                      <label htmlFor="unidadMedida">Unidad de Medida:</label>
+                      <Field
+                        name="unidadMedida"
+                        as="select"
+                        className="form-control"
+                        onChange={(event: { target: { value: string; }; }) => {
+                          const selectedUnitId = parseInt(event.target.value);
+                          const selectedUnidad = unidadesMedida.find((unidad) => unidad.id === selectedUnitId);
+
+                          if (selectedUnidad) {
+                            setFieldValue('unidadMedida', selectedUnidad);
+                          } else {
+                            console.error("No se encontró la unidad seleccionada");
+                          }
+                        }}
+                        value={values.unidadMedida ? values.unidadMedida.id : ''}
+                      >
+                        <option value="">Seleccionar Unidad de Medida</option>
+                        {unidadesMedida.map((unidad) => (
+                          <option key={unidad.id} value={unidad.id}>
+                            {unidad.denominacion}
+                          </option>
+                        ))}
+                      </Field>
+
+                      <ErrorMessage
+                        name="unidadMedida"
+                        className="error-message"
+                        component="div"
+                      />
+                      <label htmlFor="esParaElaborar" className="mt-3">Es para elaborar:</label>
+                      <Field
+                        name="esParaElaborar"
+                        type="checkbox"
+                        className="form-check-input mx-2 mt-4"
+                        style={{border: '1px solid #333'}}
+                      />
+                      <ErrorMessage
+                        name="esParaElaborar"
+                        className="error-message"
+                        component="div"
+                      />
+                  </Col>
+                </Row>
+
+
+                {/*
                 <div className="mb-4">
                   <label htmlFor="imagenes">Imagen:</label>
                   <Field
@@ -182,8 +236,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                     component="div"
                   />
                 </div>
-
-                {/* Añade campos adicionales según los atributos de tu modelo de ArticuloInsumo */}
+                */}
                 <div className="d-flex justify-content-end">
                   <Button
                     variant="outline-success"

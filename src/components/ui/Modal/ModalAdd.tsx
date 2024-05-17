@@ -12,7 +12,7 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 import IArticuloInsumo from '../../../types/IArticuloInsumo';
 import ICategoria from '../../../types/ICategoria';
-import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
+// import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
 import ArticuloManufacturadoDetalleService from '../../../services/ArticuloManufacturadoDetalleService';
 import ImagenArticuloService from '../../../services/ImagenArticuloService';
 
@@ -164,14 +164,14 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     initialValues={initialValues}
                     onSubmit={async (values: IArticuloManufacturado) => {
                         try {
-                            console.log(values.imagenes)
+                            console.log(values.nuevaImagen)
                             // Crear una nueva imagen con la URL proporcionada
                             const nuevaImagen = await imagenService.post(url + 'api/imagenArticulo', {
                                 id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
                                 eliminado: false,
-                                denominacion: values.nuevaImagen, // Utiliza la URL proporcionada
+                                url: values.nuevaImagen, // Utiliza la URL proporcionada
                             });
-                    
+                            console.log(nuevaImagen.denominacion)
                             // Agregar la nueva imagen al array de imágenes del artículo manufacturado
                             values.imagenes.push(nuevaImagen);
                     
@@ -223,6 +223,18 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                     />
                                     <ErrorMessage
                                         name="precioVenta"
+                                        className="error-message"
+                                        component="div"
+                                    />
+                                    <label htmlFor="preparacion">Preparacion:</label>
+                                    <Field
+                                        name="preparacion"
+                                        type="text"
+                                        placeholder="Preparacion"
+                                        className="form-control my-2"
+                                    />
+                                    <ErrorMessage
+                                        name="preparacion"
                                         className="error-message"
                                         component="div"
                                     />

@@ -106,6 +106,7 @@ const handleDelete = async () => {
     { id: "id", label: "Id", renderCell: (rowData) => <span>{rowData.id}</span> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <span>{rowData.denominacion}</span> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <span>{rowData.precioVenta}</span> },
+    { id: "preparacion", label: "Preparacion", renderCell: (rowData) => <span>{rowData.preparacion}</span> },
     {
       id: "unidadMedida",
       label: "Unidad Medida",

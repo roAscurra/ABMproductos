@@ -36,7 +36,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             id: 0,
             denominacion: '',
             precioVenta: 0,
-            imagenes: [],
+            imagenes: [{ id: 0, eliminado: false, url: '' }],
             unidadMedida: {
                 id: 0,
                 eliminado: false,
@@ -93,11 +93,31 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         if (selectedInsumo !== null) {
             const insumo = insumos.find(insumo => insumo.id === selectedInsumo);
             if (insumo) {
-                arrayHelpers.push({ id: insumo.id, denominacion: insumo.denominacion, cantidad: 1 });
+                const nuevoDetalle = {
+                    id: insumo.id,
+                    eliminado: false,
+                    cantidad: 1,
+                    articuloInsumo: {
+                        id: insumo.id,
+                        eliminado: insumo.eliminado,
+                        denominacion: insumo.denominacion,
+                        precioVenta: insumo.precioVenta,
+                        imagenes: insumo.imagenes,
+                        unidadMedida: insumo.unidadMedida,
+                        precioCompra: insumo.precioCompra,
+                        stockActual: insumo.stockActual,
+                        stockMaximo: insumo.stockMaximo,
+                        esParaElaborar: insumo.esParaElaborar
+                    }
+                };
+                arrayHelpers.push(nuevoDetalle);
                 setSelectedInsumo(null);
             }
         }
     };
+    
+    
+    
 
 
     return (
@@ -134,6 +154,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             } else {
                                 await productoService.post(url + 'api/producto', values);
                                 console.log('Se ha agregado correctamente.');
+                                console.log(values)
                             }
                             getProducts();
                             handleClose();
@@ -279,16 +300,19 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 <Col>
                                     <label htmlFor="imagenes">Imagen:</label>
                                     <Field
-                                        name="imagenes[0].url"
+                                        name="imagenes[0].url" // Accede a la propiedad 'url' del primer elemento en el array de imágenes
                                         type="text"
                                         placeholder="URL de la imagen"
                                         className="form-control my-2"
                                     />
+
                                     <ErrorMessage
-                                        name="imagenes[0].url"
+                                        name="imagenes.url" // Acceder a la propiedad 'url' del objeto 'imagenes'
                                         className="error-message"
                                         component="div"
                                     />
+
+
                                     <label htmlFor="unidadMedida">Unidad de Medida:</label>
                                     <Field
                                         name="unidadMedida"

@@ -34,25 +34,29 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const url = import.meta.env.VITE_API_URL;
 
-    const initialValues: IArticuloManufacturado = productToEdit
-        ? productToEdit
-        : {
-            id: 0,
-            eliminado: false,
-            denominacion: '',
-            precioVenta: 0,
-            imagenes: [],
-            unidadMedida: {
+    const initialValues: IArticuloManufacturado = {
+        id: productToEdit ? productToEdit.id : 0,
+        eliminado: productToEdit ? productToEdit.eliminado : false,
+        denominacion: productToEdit ? productToEdit.denominacion : '',
+        precioVenta: productToEdit ? productToEdit.precioVenta : 0,
+        imagenes: productToEdit ? productToEdit.imagenes.map((imagen: any) => imagen.url) : [],
+        unidadMedida: productToEdit && productToEdit.unidadMedida
+            ? { ...productToEdit.unidadMedida } 
+            : {
                 id: 0,
                 eliminado: false,
                 denominacion: '',
             },
-            descripcion: '',
-            tiempoEstimadoMinutos: 0,
-            preparacion: '',
-            articuloManufacturadoDetalles: [],
-            nuevaImagen: '', 
-        };
+        descripcion: productToEdit ? productToEdit.descripcion : '',
+        tiempoEstimadoMinutos: productToEdit ? productToEdit.tiempoEstimadoMinutos : 0,
+        preparacion: productToEdit ? productToEdit.preparacion : '',
+        articuloManufacturadoDetalles: productToEdit && productToEdit.articuloManufacturadoDetalles
+        ? productToEdit.articuloManufacturadoDetalles.map((detalle: any) => ({...detalle}))
+        : [],
+        nuevaImagen: productToEdit ? productToEdit.imagenes[0].url : '', 
+
+    };
+    
 
     const modal = useAppSelector((state) => state.modal.modal);
     const dispatch = useAppDispatch();
@@ -171,7 +175,6 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 eliminado: false,
                                 url: values.nuevaImagen, // Utiliza la URL proporcionada
                             });
-                            console.log(nuevaImagen.denominacion)
                             // Agregar la nueva imagen al array de imágenes del artículo manufacturado
                             values.imagenes.push(nuevaImagen);
                     
@@ -352,17 +355,19 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                 </Col>
                                 <Col>
                                     <label htmlFor="nuevaImagen">Imagen:</label>
-                                    <Field
+                                        <Field
                                         name="nuevaImagen"
                                         type="text"
                                         placeholder="URL de la imagen"
                                         className="form-control my-2"
+                                        value={values.nuevaImagen}
                                     />
                                     <ErrorMessage
                                         name="nuevaImagen" 
                                         className="error-message"
                                         component="div"
                                     />
+
 
 
                                     <label htmlFor="unidadMedida">Unidad de Medida:</label>

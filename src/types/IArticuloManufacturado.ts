@@ -1,12 +1,12 @@
 import DataModel from "./DataModel";
 import IArticuloManufacturadoDetalle from "./IArticuloManufacturadoDetalle";
-import IImagen from "./IImagen";
+import IImagenArticulo from "./IImagenArticulo";
 import IUnidadMedida from "./IUnidadMedida";
 
 interface IArticuloManufacturado extends DataModel<IArticuloManufacturado> {
     denominacion: string;
     precioVenta: number;
-    imagenes: IImagen[];
+    imagenes: IImagenArticulo[];
     unidadMedida: IUnidadMedida;
     descripcion: string;
     tiempoEstimadoMinutos: number;

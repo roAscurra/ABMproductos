@@ -12,6 +12,9 @@ import ArticuloInsumoService from '../../../services/ArticuloInsumoService';
 import IUnidadMedida from '../../../types/IUnidadMedida';
 import IArticuloInsumo from '../../../types/IArticuloInsumo';
 import ICategoria from '../../../types/ICategoria';
+import IArticuloManufacturadoDetalle from '../../../types/IArticuloManufacturadoDetalle';
+import ArticuloManufacturadoDetalleService from '../../../services/ArticuloManufacturadoDetalleService';
+import ImagenArticuloService from '../../../services/ImagenArticuloService';
 
 interface ModalProductProps {
     getProducts: () => void;
@@ -23,20 +26,22 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
     const unidadService = new UnidadMedidaService();
     const insumoService = new ArticuloInsumoService();
     const categoriaService = new CategoriaService();
+    const imagenService = new ImagenArticuloService();
+    const articuloManufacturadoDetalles = new ArticuloManufacturadoDetalleService();
     const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
     const [insumos, setInsumos] = useState<IArticuloInsumo[]>([]);
     const [categorias, setCategoria] = useState<ICategoria[]>([]);
     const [selectedInsumo, setSelectedInsumo] = useState<number | null>(null);
     const url = import.meta.env.VITE_API_URL;
-    const [selectedUnidad, setSelectedUnidad] = useState<IUnidadMedida | null>(null);
 
     const initialValues: IArticuloManufacturado = productToEdit
         ? productToEdit
         : {
             id: 0,
+            eliminado: false,
             denominacion: '',
             precioVenta: 0,
-            imagenes: [{ id: 0, eliminado: false, url: '' }],
+            imagenes: [],
             unidadMedida: {
                 id: 0,
                 eliminado: false,
@@ -46,7 +51,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             tiempoEstimadoMinutos: 0,
             preparacion: '',
             articuloManufacturadoDetalles: [],
-
+            nuevaImagen: '', // Agregar nuevaImagen aquí
         };
 
     const modal = useAppSelector((state) => state.modal.modal);
@@ -89,35 +94,50 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
         fetchCategorias();
     }, []);
 
-    const handleAddInsumo = (arrayHelpers: any) => {
+    // Función para obtener el último ID de los detalles
+    // const getLastId = (detalles: IArticuloManufacturadoDetalle[]): number => {
+    //     return detalles.reduce((maxId, detalle) => Math.max(maxId, detalle.id), 0);
+    // };
+
+    // Función para manejar la adición de un insumo
+    // Función para manejar la adición de un insumo
+    const handleAddInsumo = async (arrayHelpers: any, values: IArticuloManufacturado) => {
+        console.log("handleAddInsumo called with selectedInsumo:", selectedInsumo);
+        console.log("Current articuloManufacturadoDetalles:", values.articuloManufacturadoDetalles);
+        
         if (selectedInsumo !== null) {
             const insumo = insumos.find(insumo => insumo.id === selectedInsumo);
+            console.log("Found insumo:", insumo);
+        
             if (insumo) {
-                const nuevoDetalle = {
-                    id: insumo.id,
-                    eliminado: false,
-                    cantidad: 1,
-                    articuloInsumo: {
-                        id: insumo.id,
-                        eliminado: insumo.eliminado,
-                        denominacion: insumo.denominacion,
-                        precioVenta: insumo.precioVenta,
-                        imagenes: insumo.imagenes,
-                        unidadMedida: insumo.unidadMedida,
-                        precioCompra: insumo.precioCompra,
-                        stockActual: insumo.stockActual,
-                        stockMaximo: insumo.stockMaximo,
-                        esParaElaborar: insumo.esParaElaborar
-                    }
-                };
-                arrayHelpers.push(nuevoDetalle);
-                setSelectedInsumo(null);
+                try {
+                    const nuevaCantidad = values.articuloManufacturadoDetalles.find(detalle => detalle.articuloInsumo.id === selectedInsumo)?.cantidad || 0;
+        
+                    // Crear el nuevo detalle mediante el servicio
+                    const nuevoDetalle = await articuloManufacturadoDetalles.post(url + 'api/articuloManufacturadoDetalle', {
+                        id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
+                        eliminado: false,
+                        cantidad: nuevaCantidad, // Utiliza la cantidad ingresada por el usuario
+                        articuloInsumo: insumo,
+                        articuloManufacturadoId: values.id, // Asume que el ID del artículo manufacturado está disponible
+                    });
+        
+                    console.log("Nuevo detalle creado:", nuevoDetalle);
+        
+                    // Agregar el detalle creado a la lista de detalles
+                    arrayHelpers.push(nuevoDetalle);
+                    console.log("Detalle agregado. Nuevos detalles:", values.articuloManufacturadoDetalles);
+        
+                    setSelectedInsumo(null); // Resetea el insumo seleccionado
+                } catch (error) {
+                    console.error("Error al crear el detalle:", error);
+                }
             }
         }
     };
     
     
-    
+
 
 
     return (
@@ -144,6 +164,18 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     initialValues={initialValues}
                     onSubmit={async (values: IArticuloManufacturado) => {
                         try {
+                            console.log(values.imagenes)
+                            // Crear una nueva imagen con la URL proporcionada
+                            const nuevaImagen = await imagenService.post(url + 'api/imagenArticulo', {
+                                id: 0, // Este ID será ignorado por el backend y se generará uno nuevo
+                                eliminado: false,
+                                denominacion: values.nuevaImagen, // Utiliza la URL proporcionada
+                            });
+                    
+                            // Agregar la nueva imagen al array de imágenes del artículo manufacturado
+                            values.imagenes.push(nuevaImagen);
+                    
+                            // Guardar el artículo manufacturado con la nueva imagen
                             if (productToEdit) {
                                 await productoService.put(
                                     url + 'api/producto',
@@ -160,9 +192,10 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                             handleClose();
                         } catch (error) {
                             console.error('Error al realizar la operación:', error);
-                            console.log(values)
+                            console.log(JSON.stringify(values))
                         }
                     }}
+                    
 
                 >
                     {({ values, setFieldValue }) => (
@@ -266,22 +299,29 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                                     </Field>
                                                     <Button
                                                         variant="outline-primary"
-                                                        onClick={() => handleAddInsumo(arrayHelpers)}
+                                                        onClick={() => handleAddInsumo(arrayHelpers, values)}
                                                         className="ml-2"
                                                     >
                                                         Agregar
                                                     </Button>
                                                 </div>
                                                 <div className="mt-2">
-                                                    {values.articuloManufacturadoDetalles.map((insumo, index) => (
+                                                    {values.articuloManufacturadoDetalles.map((detalle, index) => (
                                                         <div key={index} className="d-flex justify-content-between align-items-center mt-2">
-                                                            <span>{insumo.denominacion}</span>
+                                                            <span>{detalle.articuloInsumo.denominacion}</span>
                                                             <Field
                                                                 name={`articuloManufacturadoDetalles.${index}.cantidad`}
                                                                 type="number"
                                                                 placeholder="Cantidad"
                                                                 className="form-control ml-2"
                                                                 style={{ width: '100px' }}
+                                                                value={values.articuloManufacturadoDetalles[index].cantidad}
+                                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    const newCantidad = parseInt(e.target.value);
+                                                                    const newDetalles = [...values.articuloManufacturadoDetalles];
+                                                                    newDetalles[index].cantidad = newCantidad;
+                                                                    setFieldValue('articuloManufacturadoDetalles', newDetalles);
+                                                                }}
                                                             />
                                                             <Button
                                                                 variant="outline-danger"
@@ -296,18 +336,18 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                                             </div>
                                         )}
                                     />
+
                                 </Col>
                                 <Col>
-                                    <label htmlFor="imagenes">Imagen:</label>
+                                    <label htmlFor="nuevaImagen">Imagen:</label>
                                     <Field
-                                        name="imagenes[0].url" // Accede a la propiedad 'url' del primer elemento en el array de imágenes
+                                        name="nuevaImagen"
                                         type="text"
                                         placeholder="URL de la imagen"
                                         className="form-control my-2"
                                     />
-
                                     <ErrorMessage
-                                        name="imagenes.url" // Acceder a la propiedad 'url' del objeto 'imagenes'
+                                        name="nuevaImagen" 
                                         className="error-message"
                                         component="div"
                                     />

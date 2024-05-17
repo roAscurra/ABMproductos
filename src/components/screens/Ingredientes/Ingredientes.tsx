@@ -115,7 +115,9 @@ export const Ingredientes = () => {
   const columns: Column[] = [
     { id: "id", label: "Id", renderCell: (rowData) => <span>{rowData.id}</span> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <span>{rowData.denominacion}</span> },
+    { id: "precioCompra", label: "Precio Compra", renderCell: (rowData) => <span>{rowData.precioCompra}</span> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <span>{rowData.precioVenta}</span> },
+    { id: "esParaElaborar", label: "Es para elaborar", renderCell: (rowData) => <span>{rowData.esParaElaborar ? "Sí" : "No"}</span> },
     {
       id: "unidadMedida",
       label: "Unidad Medida",
@@ -130,7 +132,12 @@ export const Ingredientes = () => {
         }
       }
     },
-    {
+
+
+  ];
+  {/*  
+  
+   {
       id: "imagenes",
       label: "Imágenes",
       renderCell: (rowData) => {
@@ -149,9 +156,9 @@ export const Ingredientes = () => {
       }
     },
 
-  ];
-  {/*  { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
-  { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },*/}
+  { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
+  { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
+*/}
 
   return (
     <Box

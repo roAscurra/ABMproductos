@@ -5,6 +5,10 @@ import CategoriaService from "../../../services/CategoriaService";
 import { setCategoria } from "../../../redux/slices/Categoria";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import ICategoria from "../../../types/ICategoria";
+import { toggleModal } from "../../../redux/slices/Modal";
+import ModalCategoria from "../../ui/Modal/ModalCategoria";
+import ModalEliminarCategoria from "../../ui/Modal/ModalEliminarCategoria";
 
 interface Row {
   [key: string]: any;
@@ -22,6 +26,9 @@ export const Categoria = () => {
   const dispatch = useAppDispatch();
   const categoriaService = new CategoriaService();
   const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [categoryToEdit, setCategoryToEdit] = useState<ICategoria | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
 
   const fetchCategorias = useCallback(async () => {
     try {
@@ -36,6 +43,53 @@ export const Categoria = () => {
   useEffect(() => {
     fetchCategorias();
   }, [fetchCategorias]);
+
+  const handleAddProduct = () => {
+    setCategoryToEdit(null);
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+  const handleOpenEditModal = (rowData: Row) => {
+    setCategoryToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      articulos: rowData.articulos,
+      subCategorias: rowData.subcategorias
+    });
+    dispatch(toggleModal({ modalName: 'modal' }));
+  };
+
+
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setCategoryToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      articulos: rowData.articulos,
+      subCategorias: rowData.subcategorias
+    });
+    setDeleteModalOpen(true);
+  };
+
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false); // Utiliza el estado directamente para cerrar la modal de eliminación
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (categoryToEdit && categoryToEdit.id) {
+        await categoriaService.delete(url + 'api/categoria', categoryToEdit.id.toString());
+        console.log('Se ha eliminado correctamente.');
+        handleCloseDeleteModal(); // Cerrar el modal de eliminación
+        fetchCategorias(); // Refrescar la lista de productos
+      } else {
+        console.error('No se puede eliminar la categoria porque no se proporcionó un ID válido.');
+      }
+    } catch (error) {
+      console.error('Error al eliminar la categoria:', error);
+    }
+  };
+
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -76,19 +130,23 @@ export const Categoria = () => {
             }}
             variant="contained"
             startIcon={<Add />}
-            // onClick={handleAddProduct}
+            onClick={handleAddProduct}
           >
             Categoria
           </Button>
         </Box>
-     
-        {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} 
-        // handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} 
-        />
 
+        {/* Componente de tabla para mostrar los artículos manufacturados */}
+        <TableComponent
+          data={filteredData}
+          columns={columns}
+          handleOpenDeleteModal={handleOpenDeleteModal}
+          handleOpenEditModal={handleOpenEditModal}
+        />
+        <ModalCategoria getCategories={fetchCategorias} categoryToEdit={categoryToEdit !== null ? categoryToEdit : undefined} />
+        <ModalEliminarCategoria show={deleteModalOpen} onClose={handleCloseDeleteModal} categoria={categoryToEdit} onDelete={handleDelete} />
 
       </Container>
-    </Box>  
-    );
+    </Box>
+  );
 }

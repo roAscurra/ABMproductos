@@ -51,7 +51,7 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
             tiempoEstimadoMinutos: 0,
             preparacion: '',
             articuloManufacturadoDetalles: [],
-            nuevaImagen: '', // Agregar nuevaImagen aquí
+            nuevaImagen: '', 
         };
 
     const modal = useAppSelector((state) => state.modal.modal);

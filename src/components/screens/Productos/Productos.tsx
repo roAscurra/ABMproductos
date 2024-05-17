@@ -54,6 +54,7 @@ export const Productos = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -69,6 +70,7 @@ export const Productos = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,

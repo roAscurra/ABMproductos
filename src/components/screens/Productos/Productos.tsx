@@ -54,6 +54,7 @@ export const Productos = () => {
   const handleOpenEditModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -69,6 +70,7 @@ export const Productos = () => {
   const handleOpenDeleteModal = (rowData: Row) => {
     setProductToEdit({
       id: rowData.id,
+      eliminado: rowData.eliminado,
       denominacion: rowData.denominacion,
       precioVenta: rowData.precioVenta,
       imagenes: rowData.imagenes,
@@ -106,6 +108,7 @@ const handleDelete = async () => {
     { id: "id", label: "Id", renderCell: (rowData) => <span>{rowData.id}</span> },
     { id: "denominacion", label: "Nombre", renderCell: (rowData) => <span>{rowData.denominacion}</span> },
     { id: "precioVenta", label: "Precio Venta", renderCell: (rowData) => <span>{rowData.precioVenta}</span> },
+    { id: "preparacion", label: "Preparacion", renderCell: (rowData) => <span>{rowData.preparacion}</span> },
     {
       id: "unidadMedida",
       label: "Unidad Medida",

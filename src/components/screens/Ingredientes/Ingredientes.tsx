@@ -6,6 +6,10 @@ import TableComponent from "../../ui/Table/Table";
 import IUnidadMedida from "../../../types/IUnidadMedida";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import IArticuloInsumo from "../../../types/IArticuloInsumo";
+import { toggleModal } from "../../../redux/slices/Modal";
+import ModalArticuloInsumo from "../../ui/Modal/ModalArticuloInsumo";
+import ModalDeleteArticuloInsumo from "../../ui/Modal/ModalDeleteArticuloInsumo";
 
 interface Row {
   [key: string]: any;
@@ -23,6 +27,11 @@ export const Ingredientes = () => {
   const dispatch = useAppDispatch();
   const articuloInsumoService = new ArticuloInsumoService();
   const [filteredData, setFilteredData] = useState<Row[]>([]);
+  const [articuloToEdit, setArticuloToEdit] = useState<IArticuloInsumo | null>(
+    null
+  );
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
 
   const fetchAriticulosInsumos = useCallback(async () => {
     try {
@@ -37,6 +46,70 @@ export const Ingredientes = () => {
   useEffect(() => {
     fetchAriticulosInsumos();
   }, [fetchAriticulosInsumos]);
+
+
+  const handleOpenDeleteModal = (rowData: Row) => {
+    setArticuloToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      precioVenta: rowData.precioVenta,
+      imagenes: rowData.imagenes,
+      precioCompra: rowData.precioCompra,
+      stockActual: rowData.stockActual,
+      stockMaximo: rowData.stockMaximo,
+      esParaElaborar: rowData.esParaElaborar,
+      unidadMedida: rowData.unidadMedida?.denominacion,
+    });
+    setDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (articuloToEdit && articuloToEdit.id) {
+        await articuloInsumoService.delete(
+          url + "api/articuloInsumo",
+          articuloToEdit.id.toString()
+        );
+        console.log("Artículo de insumo eliminado correctamente.");
+        handleCloseDeleteModal();
+        fetchAriticulosInsumos();
+      } else {
+        console.error(
+          "No se puede eliminar el artículo de insumo porque no se proporcionó un ID válido."
+        );
+      }
+    } catch (error) {
+      console.error("Error al eliminar el artículo de insumo:", error);
+    }
+  };
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false);
+  };
+
+
+  const handleAddArticuloInsumo = () => {
+    setArticuloToEdit(null);
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+  const handleOpenEditModal = (rowData: Row) => {
+    setArticuloToEdit({
+      id: rowData.id,
+      denominacion: rowData.denominacion,
+      precioVenta: rowData.precioVenta,
+      imagenes: rowData.imagenes,
+      precioCompra: rowData.precioCompra,
+      stockActual: rowData.stockActual,
+      stockMaximo: rowData.stockMaximo,
+      esParaElaborar: rowData.esParaElaborar,
+      unidadMedida: rowData.unidadMedida?.denominacion,
+    });
+    dispatch(toggleModal({ modalName: "modal" }));
+  };
+
+
+
 
   // Definición de las columnas para la tabla de artículos manufacturados
   const columns: Column[] = [
@@ -57,7 +130,28 @@ export const Ingredientes = () => {
         }
       }
     },
+    {
+      id: "imagenes",
+      label: "Imágenes",
+      renderCell: (rowData) => {
+        const imagenes = rowData.imagenes;
+        if (imagenes && imagenes.length > 0) {
+          return (
+            <div style={{ display: 'flex', gap: '5px' }}>
+              {imagenes.map((imagen: any, index: number) => (
+                <img key={index} src={imagen.url} alt={`Imagen ${index + 1}`} style={{ width: '100px', height: 'auto' }} />
+              ))}
+            </div>
+          );
+        } else {
+          return <span>No hay imágenes disponibles</span>;
+        }
+      }
+    },
+
   ];
+  {/*  { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
+  { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },*/}
 
   return (
     <Box
@@ -92,18 +186,32 @@ export const Ingredientes = () => {
             }}
             variant="contained"
             startIcon={<Add />}
-            // onClick={handleAddProduct}
+            onClick={handleAddArticuloInsumo}
           >
             Ingrediente
           </Button>
         </Box>
-     
+
         {/* Componente de tabla para mostrar los artículos manufacturados */}
-        <TableComponent data={filteredData} columns={columns} 
-        // handleOpenDeleteModal={handleOpenDeleteModal} handleOpenEditModal={handleOpenEditModal} 
+        <TableComponent
+          data={filteredData}
+          columns={columns}
+          handleOpenDeleteModal={handleOpenDeleteModal}
+          handleOpenEditModal={handleOpenEditModal}
+        />
+
+      <ModalDeleteArticuloInsumo
+          show={deleteModalOpen}
+          onHide={handleCloseDeleteModal}
+          articuloInsumo={articuloToEdit}
+          onDelete={handleDelete}
+        />
+        <ModalArticuloInsumo
+          getArticulosInsumo={fetchAriticulosInsumos}
+          articuloToEdit={articuloToEdit !== null ? articuloToEdit : undefined}
         />
 
 
       </Container>
-    </Box>    );
+    </Box>);
 }

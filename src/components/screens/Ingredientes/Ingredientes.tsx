@@ -59,6 +59,7 @@ export const Ingredientes = () => {
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida?.denominacion,
+      eliminado: rowData.eliminado
     });
     setDeleteModalOpen(true);
   };
@@ -104,6 +105,7 @@ export const Ingredientes = () => {
       stockMaximo: rowData.stockMaximo,
       esParaElaborar: rowData.esParaElaborar,
       unidadMedida: rowData.unidadMedida?.denominacion,
+      eliminado: rowData.eliminado
     });
     dispatch(toggleModal({ modalName: "modal" }));
   };
@@ -132,12 +134,7 @@ export const Ingredientes = () => {
         }
       }
     },
-
-
-  ];
-  {/*  
-  
-   {
+    {
       id: "imagenes",
       label: "Imágenes",
       renderCell: (rowData) => {
@@ -155,6 +152,11 @@ export const Ingredientes = () => {
         }
       }
     },
+
+  ];
+  {/*  
+  
+
 
   { id: "stockActual", label: "Stock Actual", renderCell: (rowData) => <>{rowData.stockActual}</> },
   { id: "stockMaximo", label: "Stock Maximo", renderCell: (rowData) => <>{rowData.stockMaximo}</> },
@@ -207,7 +209,7 @@ export const Ingredientes = () => {
           handleOpenEditModal={handleOpenEditModal}
         />
 
-      <ModalDeleteArticuloInsumo
+        <ModalDeleteArticuloInsumo
           show={deleteModalOpen}
           onHide={handleCloseDeleteModal}
           articuloInsumo={articuloToEdit}

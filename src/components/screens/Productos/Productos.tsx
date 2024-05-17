@@ -124,7 +124,6 @@ const handleDelete = async () => {
     },
     { id: "descripcion", label: "Descripción", renderCell: (rowData) => <span>{rowData.descripcion}</span> },
     { id: "tiempoEstimadoMinutos", label: "Tiempo Estimado (min)", renderCell: (rowData) => <span>{rowData.tiempoEstimadoMinutos}</span> },
-    { id: "preparacion", label: "Preparación", renderCell: (rowData) => <span>{rowData.preparacion}</span> },
     {
         id: "imagenes",
         label: "Imágenes",

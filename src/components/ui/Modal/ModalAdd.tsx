@@ -168,7 +168,12 @@ const ModalProducto: React.FC<ModalProductProps> = ({ getProducts, productToEdit
                     initialValues={initialValues}
                     onSubmit={async (values: IArticuloManufacturado) => {
                         try {
-                            console.log(values.nuevaImagen)
+
+                            values.articuloManufacturadoDetalles.map((insumo) => (
+                                console.log(insumo.cantidad, insumo.articuloInsumogit)
+                            ))
+
+                            console.log(values.articuloManufacturadoDetalles)
                             // Crear una nueva imagen con la URL proporcionada
                             const nuevaImagen = await imagenService.post(url + 'api/imagenArticulo', {
                                 id: 0, // Este ID será ignorado por el backend y se generará uno nuevo

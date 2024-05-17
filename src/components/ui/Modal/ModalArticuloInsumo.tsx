@@ -9,8 +9,8 @@ import IUnidadMedida from "../../../types/IUnidadMedida";
 import UnidadMedidaService from "../../../services/UnidadMedidaService";
 import { useEffect, useState } from "react";
 import ImagenArticuloService from "../../../services/ImagenArticuloService";
-import CategoriaService from "../../../services/CategoriaService";
-import ICategoria from "../../../types/ICategoria";
+// import CategoriaService from "../../../services/CategoriaService";
+// import ICategoria from "../../../types/ICategoria";
 
 
 interface ModalArticuloInsumoProps {
@@ -24,8 +24,8 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
   const unidadService = new UnidadMedidaService();
   const [unidadesMedida, setUnidadesMedida] = useState<IUnidadMedida[]>([]);
   const imagenService = new ImagenArticuloService();
-  const categoriaService = new CategoriaService();
-  const [categorias, setCategoria] = useState<ICategoria[]>([]);
+  // const categoriaService = new CategoriaService();
+  // const [categorias, setCategoria] = useState<ICategoria[]>([]);
   const url = import.meta.env.VITE_API_URL;
 
 
@@ -65,18 +65,18 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
     }
   };
 
-  const fetchCategorias = async () => {
-    try {
-      const categorias = await categoriaService.getAll(url + 'api/categoria');
-      setCategoria(categorias);
-    } catch (error) {
-      console.error('Error al obtener las categorias:', error);
-    }
-  };
+  // const fetchCategorias = async () => {
+  //   try {
+  //     const categorias = await categoriaService.getAll(url + 'api/categoria');
+  //     setCategoria(categorias);
+  //   } catch (error) {
+  //     console.error('Error al obtener las categorias:', error);
+  //   }
+  // };
 
   useEffect(() => {
     fetchUnidadesMedida();
-    fetchCategorias();
+    // fetchCategorias();
   })
 
   return (
@@ -243,7 +243,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                       ))}
                     </Field>
 
-                    <ErrorMessage
+                    {/* <ErrorMessage
                       name="unidadMedida"
                       className="error-message"
                       component="div"
@@ -270,7 +270,7 @@ const ModalArticuloInsumo: React.FC<ModalArticuloInsumoProps> = ({ getArticulosI
                       name="categoria"
                       className="error-message"
                       component="div"
-                    />
+                    /> */}
 
                     <label htmlFor="esParaElaborar" className="mt-3">Es para elaborar:</label>
                     <Field

@@ -22,6 +22,7 @@ const ModalCategoria: React.FC<ModalCategoriaProps> = ({ getCategories, category
             denominacion: '',
             articulos: [],
             subCategorias: [],
+            eliminado: false
         };
 
 

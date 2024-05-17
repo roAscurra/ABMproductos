@@ -54,7 +54,8 @@ export const Categoria = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       articulos: rowData.articulos,
-      subCategorias: rowData.subcategorias
+      subCategorias: rowData.subcategorias,
+      eliminado: rowData.eliminado
     });
     dispatch(toggleModal({ modalName: 'modal' }));
   };
@@ -65,7 +66,8 @@ export const Categoria = () => {
       id: rowData.id,
       denominacion: rowData.denominacion,
       articulos: rowData.articulos,
-      subCategorias: rowData.subcategorias
+      subCategorias: rowData.subcategorias,
+      eliminado: rowData.eliminado
     });
     setDeleteModalOpen(true);
   };
